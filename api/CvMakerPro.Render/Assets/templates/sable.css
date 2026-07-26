@@ -70,6 +70,10 @@ body {
    would emit a trailing blank page in the PDF, which is why this is break-before. */
 .paper-page + .paper-page {
   break-before: page;
+  /* Screen-only separation between sheets. This is the one thing the printer is allowed
+     to see differently, and it can be: it sits between pages, never inside one, so it
+     cannot change where a line falls. */
+  margin-top: var(--page-gap, 0);
 }
 
 .paper-block {
@@ -101,6 +105,10 @@ body {
   .paper-measure {
     display: none;
   }
+
+  .paper-page + .paper-page {
+    margin-top: 0;
+  }
 }
 
 .sable {
@@ -120,12 +128,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.sable p,
-.sable ul,
-.sable li,
-.sable h1,
-.sable h2,
-.sable h3 {
+/* :where() holds this reset at zero specificity. Written as `.sable h1` it outranks the
+   single-class rules below it — `.sable h1` is 0-1-1 against `.sable-name`'s 0-1-0 — and
+   every heading silently renders at body size and weight. */
+.sable :where(p, ul, li, h1, h2, h3) {
   margin: 0;
   padding: 0;
   font-weight: inherit;

@@ -1,122 +1,172 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { HeaderEditor } from './editor/HeaderEditor';
+import { SectionEditor } from './editor/SectionEditor';
+import { ThemePanel } from './editor/ThemePanel';
+import { sampleDocument } from './model/sample';
+import { PaperSurface } from './preview/PaperSurface';
+import { mmToPx } from './preview/units';
+import { addSection } from './state/documentEdits';
+import { useCvDocument } from './state/useCvDocument';
+import { templateById } from './templates/registry';
+import { Button, Glyph } from './ui/controls';
 
-function App() {
-  const [count, setCount] = useState(0)
+type Tab = 'content' | 'design';
+
+const PREVIEW_PADDING_PX = 36;
+
+export function App() {
+  const store = useCvDocument(sampleDocument);
+  const { document: cv, update, undo, redo, canUndo, canRedo } = store;
+
+  const [tab, setTab] = useState<Tab>('content');
+  const [pageCount, setPageCount] = useState(1);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const zoom = useFitZoom(stageRef, cv.theme.page.widthMm);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const meta = event.metaKey || event.ctrlKey;
+      if (!meta || event.key.toLowerCase() !== 'z') return;
+
+      event.preventDefault();
+      if (event.shiftKey) redo();
+      else undo();
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [undo, redo]);
+
+  const template = templateById(cv.theme.templateId);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="shell">
+      <header className="topbar">
+        <span className="brand-mark">CvMakerPro</span>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+        <div className="topbar-middle">
+          <span className="doc-title">{cv.title}</span>
+          <span className="page-count">
+            {pageCount} {pageCount === 1 ? 'page' : 'pages'}
+          </span>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <div className="topbar-actions">
+          <Button variant="quiet" onClick={undo} disabled={!canUndo} title="Undo (⌘Z)">
+            Undo
+          </Button>
+          <Button variant="quiet" onClick={redo} disabled={!canRedo} title="Redo (⇧⌘Z)">
+            Redo
+          </Button>
+          <Button variant="primary">Export PDF</Button>
+        </div>
+      </header>
+
+      <div className="workspace">
+        <aside className="editor-pane">
+          <nav className="tabs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'content'}
+              className={`tab${tab === 'content' ? ' is-active' : ''}`}
+              onClick={() => setTab('content')}
+            >
+              Content
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === 'design'}
+              className={`tab${tab === 'design' ? ' is-active' : ''}`}
+              onClick={() => setTab('design')}
+            >
+              Design
+            </button>
+          </nav>
+
+          <div className="editor-scroll">
+            {tab === 'content' ? (
+              <>
+                <HeaderEditor store={store} />
+                {cv.sections.map((section, index) => (
+                  <SectionEditor
+                    key={section.id}
+                    store={store}
+                    section={section}
+                    index={index}
+                    total={cv.sections.length}
+                  />
+                ))}
+
+                <div className="add-section">
+                  <span className="field-label">Add a section</span>
+                  <div className="add-section-buttons">
+                    <Button onClick={() => update((doc) => addSection(doc, 'entries'))}>
+                      <Glyph.Plus /> Dated entries
+                    </Button>
+                    <Button onClick={() => update((doc) => addSection(doc, 'skills'))}>
+                      <Glyph.Plus /> Skills
+                    </Button>
+                    <Button onClick={() => update((doc) => addSection(doc, 'prose'))}>
+                      <Glyph.Plus /> Paragraph
+                    </Button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <ThemePanel store={store} />
+            )}
+          </div>
+        </aside>
+
+        <main className="preview-pane" ref={stageRef}>
+          <div className="preview-scroll">
+            <PaperSurface
+              document={cv}
+              template={template}
+              zoom={zoom}
+              onPageCountChange={setPageCount}
+            />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }
 
-export default App
+/**
+ * Scales the sheet to the width of the preview pane.
+ *
+ * A zoom control is the obvious alternative and it is worse: the only question anyone
+ * asks of a CV preview is "does this fit", and that is answered by seeing the full width
+ * at once. The sheet gets whatever room is left after the editor.
+ */
+function useFitZoom(ref: React.RefObject<HTMLElement | null>, pageWidthMm: number): number {
+  const [zoom, setZoom] = useState(0.7);
+
+  const measure = useCallback(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const available = element.clientWidth - 2 * PREVIEW_PADDING_PX;
+    setZoom(clamp(available / mmToPx(pageWidthMm), 0.35, 1.4));
+  }, [ref, pageWidthMm]);
+
+  useLayoutEffect(() => {
+    measure();
+
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [measure, ref]);
+
+  return zoom;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
