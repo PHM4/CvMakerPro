@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CvMakerPro.Api", "CvMakerPr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CvMakerPro.Domain.Tests", "CvMakerPro.Domain.Tests\CvMakerPro.Domain.Tests.csproj", "{8E285BC2-9530-4027-997E-519B3A18BAD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CvMakerPro.Render.Tests", "CvMakerPro.Render.Tests\CvMakerPro.Render.Tests.csproj", "{2A959049-4F8C-4912-BB14-A2308DB553F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{8E285BC2-9530-4027-997E-519B3A18BAD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E285BC2-9530-4027-997E-519B3A18BAD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E285BC2-9530-4027-997E-519B3A18BAD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A959049-4F8C-4912-BB14-A2308DB553F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A959049-4F8C-4912-BB14-A2308DB553F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A959049-4F8C-4912-BB14-A2308DB553F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A959049-4F8C-4912-BB14-A2308DB553F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
