@@ -16,6 +16,13 @@ public sealed record BrowserOptions
     /// convenient locally and wrong in production.
     /// </summary>
     public string? ExecutablePath { get; init; }
+
+    /// <summary>
+    /// Drops Chromium's own sandbox. Only for hosts that forbid the user namespaces the setuid
+    /// helper needs — it is a real reduction in isolation for a process whose entire job is
+    /// loading markup that arrived over the wire, so it is opt-in and it is logged every time.
+    /// </summary>
+    public bool DisableSandbox { get; init; }
 }
 
 /// <summary>
@@ -74,21 +81,33 @@ public sealed class BrowserProvider(BrowserOptions options, ILogger<BrowserProvi
             await new BrowserFetcher().DownloadAsync();
         }
 
+        List<string> args =
+        [
+            // Containers run without the shared memory Chromium expects, and the symptom is
+            // renderer crashes on larger documents rather than an error.
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            // No page is ever allowed to make a request, so the network service is dead weight
+            // and one more thing that could reach out.
+            "--disable-background-networking",
+            "--no-first-run",
+        ];
+
+        if (options.DisableSandbox)
+        {
+            logger.LogWarning(
+                "Launching Chromium with its sandbox disabled. The renderer loads markup received "
+                + "over the wire, so this leaves request interception and disabled JavaScript as the "
+                + "only isolation. Install chromium-sandbox and unset Chromium:DisableSandbox instead.");
+
+            args.Add("--no-sandbox");
+        }
+
         return await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true,
             ExecutablePath = executablePath,
-            Args =
-            [
-                // Containers run without the shared memory Chromium expects, and the
-                // symptom is renderer crashes on larger documents rather than an error.
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-                // No page is ever allowed to make a request, so the network service is
-                // dead weight and one more thing that could reach out.
-                "--disable-background-networking",
-                "--no-first-run",
-            ],
+            Args = [.. args],
         });
     }
 

@@ -1,0 +1,34 @@
+# Local run of the whole thing, closest to what production does.
+# For day-to-day development use `npm run dev` and `dotnet run` instead — this rebuilds the SPA
+# on every change, which is far too slow a loop to work in.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cvmaker
+      POSTGRES_PASSWORD: local-development-only
+      POSTGRES_DB: cvmaker
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U cvmaker']
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    ports:
+      - '8080:8080'
+    environment:
+      ConnectionStrings__Postgres: 'Host=db;Database=cvmaker;Username=cvmaker;Password=local-development-only'
+      # Read from your shell, never committed. Without it everything works except the assistant.
+      Anthropic__ApiKey: '${ANTHROPIC_API_KEY:-}'
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

@@ -43,6 +43,7 @@ builder.Services.AddScoped<DocumentService>();
 builder.Services.AddSingleton(new BrowserOptions
 {
     ExecutablePath = builder.Configuration["Chromium:ExecutablePath"],
+    DisableSandbox = builder.Configuration.GetValue("Chromium:DisableSandbox", false),
 });
 builder.Services.AddSingleton<IBrowserProvider, BrowserProvider>();
 builder.Services.AddSingleton<HtmlSanitiser>();
@@ -67,6 +68,19 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var app = builder.Build();
+
+/*
+ * Apply migrations on boot.
+ *
+ * Fine for one instance, which is what this deploys as. If it ever runs more than one replica,
+ * this becomes a race — two containers starting together will both try to take the migration
+ * lock — and it should move to a release-phase command instead.
+ */
+if (app.Configuration.GetValue("Database:MigrateOnStartup", true))
+{
+    using var scope = app.Services.CreateScope();
+    await scope.ServiceProvider.GetRequiredService<CvDbContext>().Database.MigrateAsync();
+}
 
 app.UseRateLimiter();
 app.UseAuthentication();
