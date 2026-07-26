@@ -1,0 +1,19 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Local config and secrets
+.env
+.env.local
+appsettings.Development.json
+appsettings.Local.json
+
+# macOS
+.DS_Store
