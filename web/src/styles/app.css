@@ -592,3 +592,268 @@ select.control {
   background: var(--positive-wash);
   color: var(--positive);
 }
+
+/* Session and save state -------------------------------------------------- */
+
+.save-state {
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+}
+
+.save-state.is-saved {
+  color: var(--positive);
+}
+
+.save-state.is-failed {
+  color: var(--danger);
+}
+
+.account {
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+
+/* Dialog ------------------------------------------------------------------ */
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(23 21 15 / 0.35);
+  padding: var(--space-4);
+  z-index: 10;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: min(26rem, 100%);
+  padding: var(--space-5);
+  background: var(--surface-raised);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+}
+
+.dialog-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 400;
+}
+
+.dialog-lead {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.dialog-switch {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+/* Assistant --------------------------------------------------------------- */
+
+.assist-note {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-xs);
+}
+
+.assist-note-danger {
+  color: var(--danger);
+}
+
+.assist-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  /* The one place a wash is earned: this content came from a model, not from the user, and it
+     should be visibly separate from what they wrote. */
+  background: var(--accent-wash);
+  border-left: 2px solid var(--accent);
+}
+
+.assist-assessment {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+.assist-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.assist-suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.assist-suggestion:hover {
+  border-color: var(--accent);
+}
+
+.assist-approach {
+  font-size: var(--text-xs);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.assist-needs ul,
+.gaps ul {
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.assist-dismiss {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+/* Tailor ------------------------------------------------------------------ */
+
+.tailor,
+.tailor-result,
+.signed-out-note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.signed-out-note p {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.signed-out-note {
+  align-items: flex-start;
+}
+
+.coverage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.coverage-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.coverage-value {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-lg);
+}
+
+.coverage-track {
+  height: 4px;
+  background: var(--surface-sunk);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.coverage-fill {
+  height: 100%;
+  background: var(--accent);
+}
+
+.chips,
+.suggestions,
+.gaps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  padding: 2px var(--space-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+
+.suggestion {
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--rule);
+}
+
+.suggestion h4 {
+  margin: 0;
+  font-size: var(--text-xs);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 400;
+}
+
+.suggestion p {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+}
+
+.suggestion-why {
+  color: var(--ink-muted);
+  font-style: italic;
+}
