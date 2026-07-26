@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace CvMakerPro.Domain;
 
 /// <summary>
@@ -12,6 +14,7 @@ public sealed record DateRange
     /// <summary>Null means the entry is ongoing — templates render this as "Present".</summary>
     public YearMonth? End { get; init; }
 
+    [JsonIgnore]
     public bool IsOngoing => End is null;
 }
 

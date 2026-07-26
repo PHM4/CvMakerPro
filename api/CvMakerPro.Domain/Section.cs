@@ -20,6 +20,7 @@ public abstract record Section
     /// <summary>Kept in the document but omitted from render — how tailoring per application works without deleting anything.</summary>
     public bool Hidden { get; init; }
 
+    [JsonIgnore]
     public abstract bool IsEmpty { get; }
 }
 
@@ -27,6 +28,7 @@ public sealed record EntrySection : Section
 {
     public required EquatableArray<Entry> Entries { get; init; }
 
+    [JsonIgnore]
     public override bool IsEmpty => Entries.Count == 0;
 }
 
@@ -34,6 +36,7 @@ public sealed record SkillSection : Section
 {
     public required EquatableArray<SkillGroup> Groups { get; init; }
 
+    [JsonIgnore]
     public override bool IsEmpty => Groups.All(group => group.Skills.Count == 0);
 }
 
@@ -52,5 +55,6 @@ public sealed record ProseSection : Section
 {
     public required RichText Body { get; init; }
 
+    [JsonIgnore]
     public override bool IsEmpty => Body.IsEmpty;
 }

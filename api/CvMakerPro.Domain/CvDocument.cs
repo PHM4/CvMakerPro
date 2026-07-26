@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace CvMakerPro.Domain;
 
 /// <summary>
@@ -23,6 +25,7 @@ public sealed record CvDocument
 
     public DateTimeOffset UpdatedAt { get; init; }
 
+    [JsonIgnore]
     public IEnumerable<Section> VisibleSections =>
         Sections.Where(section => !section.Hidden && !section.IsEmpty);
 }

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace CvMakerPro.Domain;
 
 /// <summary>
@@ -66,7 +68,10 @@ public sealed record PageGeometry
     public required double HeightMm { get; init; }
     public required Margins MarginMm { get; init; }
 
+    [JsonIgnore]
     public double ContentWidthMm => WidthMm - MarginMm.Left - MarginMm.Right;
+
+    [JsonIgnore]
     public double ContentHeightMm => HeightMm - MarginMm.Top - MarginMm.Bottom;
 
     /// <summary>Margins under 8mm get clipped by most office printers.</summary>

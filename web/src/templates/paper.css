@@ -1,0 +1,79 @@
+/*
+ * The paper itself: page box, margins, and the reset every template sits on.
+ *
+ * Loaded before the template stylesheet in both the browser preview and the print
+ * service, in that order, always. Fonts are prepended to this file by
+ * scripts/build-render-assets.mjs as base64 @font-face rules — the printer runs with
+ * networking blocked, and a font that silently falls back to Times New Roman changes
+ * every line break on the page.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* Pages are laid out by the paginator, which already knows the geometry, so the sheet
+   takes its size from custom properties rather than hard-coded millimetres. */
+.paper-page {
+  position: relative;
+  width: var(--page-width);
+  height: var(--page-height);
+  padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom)
+    var(--page-margin-left);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* Every sheet after the first starts a new physical page. break-after on the last one
+   would emit a trailing blank page in the PDF, which is why this is break-before. */
+.paper-page + .paper-page {
+  break-before: page;
+  /* Screen-only separation between sheets. This is the one thing the printer is allowed
+     to see differently, and it can be: it sits between pages, never inside one, so it
+     cannot change where a line falls. */
+  margin-top: var(--page-gap, 0);
+}
+
+.paper-block {
+  /* Blocks are positioned by the paginator, so they carry no margins of their own.
+     No margins means no margin collapsing, which means the height measured in the
+     browser is the height the printer produces. That equality is the whole design. */
+  margin: 0;
+}
+
+/* The measuring pass renders the same blocks at the same width, off-screen. It must be
+   laid out — display:none or visibility:hidden would give zero or wrong heights — so it
+   is pushed out of view instead and hidden from assistive tech. */
+.paper-measure {
+  position: absolute;
+  top: -10000mm;
+  left: 0;
+  width: var(--page-content-width);
+  pointer-events: none;
+}
+
+/*
+ * The printed page carries no margin of its own. It is tempting to let @page own the
+ * margins and drop the padding when printing, but that gives the screen and the printer
+ * two different box models — and then the preview is an approximation again. Instead the
+ * sheet is the same padded, fixed-size box in both, and @page is reduced to a hole of
+ * exactly that size. Its dimensions are written by the paginator, which knows them.
+ */
+@media print {
+  .paper-measure {
+    display: none;
+  }
+
+  .paper-page + .paper-page {
+    margin-top: 0;
+  }
+}

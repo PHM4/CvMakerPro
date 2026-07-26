@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace CvMakerPro.Domain;
 
 /// <summary>
@@ -14,6 +16,7 @@ public sealed record RichText
     public static RichText Plain(string text) =>
         new() { Runs = [new TextRun { Text = text }] };
 
+    [JsonIgnore]
     public bool IsEmpty => Runs.All(run => string.IsNullOrWhiteSpace(run.Text));
 
     /// <summary>Concatenated text with all formatting dropped — used for search and ATS checks.</summary>
