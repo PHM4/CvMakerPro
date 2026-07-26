@@ -1,0 +1,202 @@
+.marginal {
+  --doc-ink: #16150f;
+  --doc-ink-muted: #4a463c;
+  --doc-rule: #b9b2a2;
+  --doc-base: calc(9.7pt * var(--font-scale, 1));
+  --doc-lead: 1.36;
+  --doc-gap-section: calc(4.6mm * var(--density, 1));
+  --doc-gap-entry: calc(2.9mm * var(--density, 1));
+
+  font-family: var(--doc-font), 'Source Serif 4 Variable', Georgia, serif;
+  font-size: var(--doc-base);
+  line-height: var(--doc-lead);
+  color: var(--doc-ink);
+  font-variant-numeric: oldstyle-nums proportional-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* :where() holds this reset at zero specificity. Written as `.marginal h1` it outranks the
+   single-class rules below it — `.marginal h1` is 0-1-1 against `.marginal-name`'s 0-1-0 — and
+   every heading silently renders at body size and weight. */
+.marginal :where(p, ul, li, h1, h2, h3) {
+  margin: 0;
+  padding: 0;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+.marginal a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 0.4pt solid var(--doc-rule);
+}
+
+/* Masthead ---------------------------------------------------------------- */
+
+.marginal-name {
+  font-size: calc(var(--doc-base) * 2.15);
+  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+
+.marginal-headline {
+  margin-top: 1.4mm;
+  font-size: calc(var(--doc-base) * 1.02);
+  font-style: italic;
+  color: var(--doc-ink-muted);
+}
+
+.marginal-contacts {
+  margin-top: 2.2mm;
+  font-size: calc(var(--doc-base) * 0.92);
+  color: var(--doc-ink-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2.6mm;
+}
+
+/* A hairline between contacts rather than a bullet or an icon. Icon rows are the first
+   thing an applicant tracking system discards, and they cost a line of height. */
+.marginal-contacts > * + *::before {
+  content: '';
+  display: inline-block;
+  width: 0.4pt;
+  height: 0.85em;
+  margin-right: 2.6mm;
+  vertical-align: -0.12em;
+  background: var(--doc-rule);
+}
+
+.marginal-masthead-rule {
+  margin-top: 3.4mm;
+  border-bottom: 0.9pt solid var(--doc-accent);
+}
+
+/* Sections ---------------------------------------------------------------- */
+
+.marginal-heading {
+  font-size: calc(var(--doc-base) * 0.86);
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--doc-accent);
+  padding-bottom: 1.1mm;
+  border-bottom: 0.4pt solid var(--doc-rule);
+}
+
+/* Entry header: title and organisation on the left, dates and place on the right.
+   Grid rather than flex so a long job title wraps under itself instead of shoving the
+   dates off the right margin. */
+.marginal-entry-head {
+  display: grid;
+  grid-template-columns: 26mm minmax(0, 1fr);
+  grid-template-areas: 'meta title';
+  align-items: baseline;
+  column-gap: 5mm;
+}
+
+.marginal-entry-head > div:first-child {
+  grid-area: title;
+}
+
+.marginal-entry-title {
+  font-weight: 600;
+}
+
+.marginal-entry-org {
+  font-weight: 400;
+}
+
+.marginal-entry-org::before {
+  content: ', ';
+  font-weight: 400;
+}
+
+.marginal-entry-meta {
+  grid-area: meta;
+  text-align: right;
+  font-size: calc(var(--doc-base) * 0.86);
+  color: var(--doc-ink-muted);
+  white-space: normal;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.marginal-entry-place {
+  display: block;
+  font-style: italic;
+}
+
+/* Bullets and headings line up with the content column, not the rail, so the rail reads as a
+   margin rather than as a second column of text. */
+.marginal-bullet,
+.marginal-tags,
+.marginal-prose,
+.marginal-skill-row,
+.marginal-skill-list {
+  margin-left: 31mm;
+}
+
+.marginal-heading {
+  padding-left: 31mm;
+}
+
+/* Bullets ----------------------------------------------------------------- */
+
+.marginal-bullet {
+  position: relative;
+  padding-left: 3.6mm;
+  position: relative;
+}
+
+/* An en dash, not a disc. A round bullet at 9pt on paper prints as a smudge. */
+.marginal-bullet::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--doc-ink-muted);
+}
+
+.marginal-tags {
+  font-size: calc(var(--doc-base) * 0.92);
+  color: var(--doc-ink-muted);
+}
+
+.marginal-tags-label {
+  font-style: italic;
+}
+
+/* Skills ------------------------------------------------------------------ */
+
+.marginal-skill-row {
+  display: grid;
+  grid-template-columns: 28mm minmax(0, 1fr);
+  column-gap: 3mm;
+}
+
+.marginal-skill-label {
+  font-weight: 600;
+}
+
+.marginal-skill-list {
+  color: var(--doc-ink-muted);
+}
+
+.marginal-prose {
+  text-align: justify;
+  hyphens: auto;
+}
+
+.marginal-em {
+  font-style: italic;
+}
+
+.marginal-strong {
+  font-weight: 600;
+}
+
+.marginal-code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.92em;
+}
+

@@ -1,7 +1,7 @@
 import { A4, LETTER, type Density, type PageGeometry } from '../model/document';
 import { editTheme } from '../state/documentEdits';
 import type { CvDocumentStore } from '../state/useCvDocument';
-import { templates } from '../templates/registry';
+import { templateById, templates } from '../templates/registry';
 import { Field, SelectField } from '../ui/controls';
 
 /**
@@ -42,8 +42,19 @@ export function ThemePanel({ store }: { store: CvDocumentStore }) {
         label="Template"
         value={theme.templateId}
         options={templates.map((template) => ({ value: template.id, label: template.name }))}
-        onChange={(value) => update((doc) => editTheme(doc, { templateId: value }))}
+        onChange={(value) =>
+          update((doc) =>
+            editTheme(doc, {
+              templateId: value,
+              // Adopt the template's own typeface. Otherwise Ledger, whose whole character is
+              // its sans face, first appears set in whatever serif the last template used.
+              fontFamily: templateById(value).defaultFontFamily,
+            }),
+          )
+        }
       />
+
+      <p className="field-hint">{templateById(theme.templateId).description}</p>
 
       <SelectField
         label="Typeface"

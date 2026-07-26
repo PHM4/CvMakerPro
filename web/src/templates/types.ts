@@ -38,5 +38,12 @@ export interface TemplateDefinition {
   /** Stylesheet injected into the paper document. Must not reference anything remote. */
   css: string;
 
+  /**
+   * The typeface this template was drawn for. Selecting the template adopts it, because a
+   * template whose identity is its sans face should not first appear set in a serif. The user's
+   * own font choice then sticks until they pick a different template.
+   */
+  defaultFontFamily: string;
+
   buildBlocks: (document: CvDocument) => FlowBlock[];
 }

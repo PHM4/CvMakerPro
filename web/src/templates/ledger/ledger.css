@@ -1,0 +1,183 @@
+.ledger {
+  --doc-ink: #16150f;
+  --doc-ink-muted: #4a463c;
+  --doc-rule: #b9b2a2;
+  --doc-base: calc(9.3pt * var(--font-scale, 1));
+  --doc-lead: 1.42;
+  --doc-gap-section: calc(4.6mm * var(--density, 1));
+  --doc-gap-entry: calc(2.9mm * var(--density, 1));
+
+  font-family: var(--doc-font), 'Instrument Sans Variable', ui-sans-serif, sans-serif;
+  font-size: var(--doc-base);
+  line-height: var(--doc-lead);
+  color: var(--doc-ink);
+  font-variant-numeric: lining-nums tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* :where() holds this reset at zero specificity. Written as `.ledger h1` it outranks the
+   single-class rules below it — `.ledger h1` is 0-1-1 against `.ledger-name`'s 0-1-0 — and
+   every heading silently renders at body size and weight. */
+.ledger :where(p, ul, li, h1, h2, h3) {
+  margin: 0;
+  padding: 0;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+.ledger a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 0.4pt solid var(--doc-rule);
+}
+
+/* Masthead ---------------------------------------------------------------- */
+
+.ledger-name {
+  font-size: calc(var(--doc-base) * 1.5);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ledger-headline {
+  margin-top: 1.4mm;
+  font-size: calc(var(--doc-base) * 1.02);
+  font-style: italic;
+  color: var(--doc-ink-muted);
+}
+
+.ledger-contacts {
+  margin-top: 2.2mm;
+  font-size: calc(var(--doc-base) * 0.92);
+  color: var(--doc-ink-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2.6mm;
+}
+
+/* A hairline between contacts rather than a bullet or an icon. Icon rows are the first
+   thing an applicant tracking system discards, and they cost a line of height. */
+.ledger-contacts > * + *::before {
+  content: '';
+  display: inline-block;
+  width: 0.4pt;
+  height: 0.85em;
+  margin-right: 2.6mm;
+  vertical-align: -0.12em;
+  background: var(--doc-rule);
+}
+
+.ledger-masthead-rule {
+  margin-top: 3.4mm;
+  border-bottom: 0.4pt solid var(--doc-rule);
+}
+
+/* Sections ---------------------------------------------------------------- */
+
+.ledger-heading {
+  font-size: calc(var(--doc-base) * 0.86);
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--doc-accent);
+  padding-top: 1.4mm;
+  border-top: 1.2pt solid var(--doc-accent);
+}
+
+/* Entry header: title and organisation on the left, dates and place on the right.
+   Grid rather than flex so a long job title wraps under itself instead of shoving the
+   dates off the right margin. */
+.ledger-entry-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 4mm;
+}
+
+.ledger-entry-title {
+  font-weight: 600;
+}
+
+.ledger-entry-org {
+  font-weight: 400;
+}
+
+.ledger-entry-org::before {
+  content: ', ';
+  font-weight: 400;
+}
+
+.ledger-entry-meta {
+  text-align: right;
+  font-size: calc(var(--doc-base) * 0.92);
+  color: var(--doc-ink-muted);
+  white-space: nowrap;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.ledger-entry-place {
+  display: block;
+  font-style: italic;
+}
+
+/* Bullets ----------------------------------------------------------------- */
+
+.ledger-bullet {
+  position: relative;
+  padding-left: 3.6mm;
+}
+
+/* A small square. It holds its shape at 9pt where a disc fills in. */
+.ledger-bullet::before {
+  content: '▪';
+  font-size: 0.7em;
+  top: 0.15em;
+  position: absolute;
+  left: 0;
+  color: var(--doc-ink-muted);
+}
+
+.ledger-tags {
+  font-size: calc(var(--doc-base) * 0.92);
+  color: var(--doc-ink-muted);
+}
+
+.ledger-tags-label {
+  font-style: italic;
+}
+
+/* Skills ------------------------------------------------------------------ */
+
+.ledger-skill-row {
+  display: grid;
+  grid-template-columns: 32mm minmax(0, 1fr);
+  column-gap: 3mm;
+}
+
+.ledger-skill-label {
+  font-weight: 600;
+}
+
+.ledger-skill-list {
+  color: var(--doc-ink-muted);
+}
+
+.ledger-prose {
+  text-align: left;
+}
+
+.ledger-em {
+  font-style: italic;
+}
+
+.ledger-strong {
+  font-weight: 600;
+}
+
+.ledger-code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.92em;
+}
+
