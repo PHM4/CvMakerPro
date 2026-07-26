@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { contentHeightMm, type CvDocument } from '../model/document';
 import type { TemplateDefinition } from '../templates/types';
@@ -11,12 +11,22 @@ import { pxToMm } from './units';
 /** Screen-only separation between sheets, in millimetres of document space. */
 const PAGE_GAP_MM = 8;
 
+export interface PaperHandle {
+  /**
+   * The rendered sheets, exactly as the browser laid them out, for the print service to
+   * reproduce. This is the whole fidelity argument in one method: the printer is not given
+   * instructions for building the page, it is given the page.
+   */
+  serialise: () => string | null;
+}
+
 interface PaperSurfaceProps {
   document: CvDocument;
   template: TemplateDefinition;
   /** 1 renders the sheet at its physical size. */
   zoom: number;
   onPageCountChange?: (count: number) => void;
+  ref?: React.Ref<PaperHandle>;
 }
 
 /**
@@ -27,7 +37,7 @@ interface PaperSurfaceProps {
  * An iframe gives a document with its own cascade for free, and it is the same isolation
  * the print service gets, which is the point.
  */
-export function PaperSurface({ document: cv, template, zoom, onPageCountChange }: PaperSurfaceProps) {
+export function PaperSurface({ document: cv, template, zoom, onPageCountChange, ref }: PaperSurfaceProps) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [frameDocument, setFrameDocument] = useState<Document | null>(null);
@@ -102,6 +112,25 @@ export function PaperSurface({ document: cv, template, zoom, onPageCountChange }
   useEffect(() => {
     if (pages) onPageCountChange?.(pages.length);
   }, [pages, onPageCountChange]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      serialise: () => {
+        if (!frameDocument) return null;
+
+        // Only the sheets. The measuring container holds a second copy of every block, and
+        // shipping it would double the payload and print a phantom page.
+        const sheets = frameDocument.querySelectorAll('.paper-page');
+        return sheets.length === 0
+          ? null
+          : Array.from(sheets)
+              .map((sheet) => sheet.outerHTML)
+              .join('\n');
+      },
+    }),
+    [frameDocument, pages],
+  );
 
   const nodesByKey = useMemo(
     () => new Map(blocks.map((block) => [block.key, block.node])),

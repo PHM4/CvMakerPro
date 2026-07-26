@@ -570,3 +570,25 @@ select.control {
   background: var(--paper);
   box-shadow: var(--shadow-page);
 }
+
+/* Banners ----------------------------------------------------------------- */
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-sm);
+}
+
+.banner-danger {
+  background: var(--danger-wash);
+  color: var(--danger);
+}
+
+.banner-positive {
+  background: var(--positive-wash);
+  color: var(--positive);
+}

@@ -2,8 +2,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { HeaderEditor } from './editor/HeaderEditor';
 import { SectionEditor } from './editor/SectionEditor';
 import { ThemePanel } from './editor/ThemePanel';
+import { useExport } from './export/useExport';
 import { sampleDocument } from './model/sample';
-import { PaperSurface } from './preview/PaperSurface';
+import { PaperSurface, type PaperHandle } from './preview/PaperSurface';
 import { mmToPx } from './preview/units';
 import { addSection } from './state/documentEdits';
 import { useCvDocument } from './state/useCvDocument';
@@ -21,7 +22,9 @@ export function App() {
   const [tab, setTab] = useState<Tab>('content');
   const [pageCount, setPageCount] = useState(1);
   const stageRef = useRef<HTMLDivElement>(null);
+  const paperRef = useRef<PaperHandle>(null);
   const zoom = useFitZoom(stageRef, cv.theme.page.widthMm);
+  const exporting = useExport(paperRef, cv);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -58,9 +61,24 @@ export function App() {
           <Button variant="quiet" onClick={redo} disabled={!canRedo} title="Redo (⇧⌘Z)">
             Redo
           </Button>
-          <Button variant="primary">Export PDF</Button>
+          <Button
+            variant="primary"
+            onClick={exporting.run}
+            disabled={exporting.state.status === 'working'}
+          >
+            {exporting.state.status === 'working' ? 'Printing…' : 'Export PDF'}
+          </Button>
         </div>
       </header>
+
+      {exporting.state.status === 'failed' ? (
+        <div className="banner banner-danger" role="alert">
+          <span>{exporting.state.message}</span>
+          <Button variant="quiet" onClick={exporting.dismiss}>
+            Dismiss
+          </Button>
+        </div>
+      ) : null}
 
       <div className="workspace">
         <aside className="editor-pane">
@@ -123,6 +141,7 @@ export function App() {
         <main className="preview-pane" ref={stageRef}>
           <div className="preview-scroll">
             <PaperSurface
+              ref={paperRef}
               document={cv}
               template={template}
               zoom={zoom}

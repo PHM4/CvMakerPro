@@ -19,32 +19,51 @@ const web = resolve(here, '..');
 const renderAssets = resolve(web, '../api/CvMakerPro.Render/Assets');
 
 /*
- * Weight-axis-only files, latin subset. The optical-size and full-unicode builds are
- * two to four times larger and neither earns it: CVs are latin text at one or two sizes.
+ * Static weights, latin subset — deliberately not the variable builds.
+ *
+ * Chromium's print path does not embed a variable font as a font program. It rasterises the
+ * glyphs and emits a Type3 font instead, which inflates the PDF and is the format applicant
+ * tracking systems parse worst. Static faces embed as real TrueType, so the file stays small and
+ * the text stays machine-readable. PdfRendererTests asserts the embedded font name to keep this
+ * from regressing quietly — nothing about the rendered page looks wrong when it does.
+ *
+ * Only the weights the templates actually ask for: 400 and 600, plus italic at 400.
  */
 const FONTS = [
   {
     family: 'Source Serif 4 Variable',
-    file: '@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2',
-    weight: '200 900',
+    file: '@fontsource/source-serif-4/files/source-serif-4-latin-400-normal.woff2',
+    weight: '400',
     style: 'normal',
   },
   {
     family: 'Source Serif 4 Variable',
-    file: '@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-italic.woff2',
-    weight: '200 900',
+    file: '@fontsource/source-serif-4/files/source-serif-4-latin-600-normal.woff2',
+    weight: '600',
+    style: 'normal',
+  },
+  {
+    family: 'Source Serif 4 Variable',
+    file: '@fontsource/source-serif-4/files/source-serif-4-latin-400-italic.woff2',
+    weight: '400',
     style: 'italic',
   },
   {
     family: 'Instrument Sans Variable',
-    file: '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2',
-    weight: '400 700',
+    file: '@fontsource/instrument-sans/files/instrument-sans-latin-400-normal.woff2',
+    weight: '400',
     style: 'normal',
   },
   {
     family: 'Instrument Sans Variable',
-    file: '@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-italic.woff2',
-    weight: '400 700',
+    file: '@fontsource/instrument-sans/files/instrument-sans-latin-600-normal.woff2',
+    weight: '600',
+    style: 'normal',
+  },
+  {
+    family: 'Instrument Sans Variable',
+    file: '@fontsource/instrument-sans/files/instrument-sans-latin-400-italic.woff2',
+    weight: '400',
     style: 'italic',
   },
 ];
