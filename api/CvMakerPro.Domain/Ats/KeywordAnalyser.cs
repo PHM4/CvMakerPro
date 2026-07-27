@@ -31,15 +31,27 @@ public static partial class KeywordAnalyser
     /// </summary>
     private static readonly HashSet<string> StopWords = new(StringComparer.OrdinalIgnoreCase)
     {
+        // Grammar. Two-letter words survive the length filter, which exists so that C, R and Go
+        // are not discarded, so they have to be named here instead.
         "the", "and", "for", "with", "you", "your", "our", "will", "are", "have", "has", "this",
-        "that", "from", "will", "who", "all", "any", "can", "may", "not", "but", "their", "them",
+        "that", "from", "who", "all", "any", "can", "may", "not", "but", "their", "them",
         "they", "its", "was", "were", "been", "being", "more", "most", "such", "than", "then",
         "into", "over", "also", "about", "across", "within", "while", "when", "where", "what",
-        "role", "team", "work", "working", "job", "candidate", "applicants", "apply", "years",
-        "experience", "strong", "excellent", "good", "great", "ability", "able", "skills", "skill",
-        "knowledge", "understanding", "familiar", "familiarity", "plus", "bonus", "nice", "must",
-        "should", "would", "could", "well", "help", "helping", "using", "use", "used", "new",
-        "other", "others", "including", "include", "includes", "etc", "per", "via", "out", "off",
+        "is", "be", "as", "at", "on", "in", "to", "of", "it", "we", "us", "do", "by", "or",
+        "an", "if", "so", "no", "up", "his", "her", "get", "got",
+
+        // Job-advert filler. These are the highest-frequency words in almost every posting, so
+        // without them they dominate the ranking and push the actual technologies out of it.
+        "role", "team", "teams", "work", "working", "job", "candidate", "candidates", "applicants",
+        "apply", "years", "year", "experience", "experienced", "strong", "excellent", "good",
+        "great", "ability", "able", "skills", "skill", "knowledge", "understanding", "familiar",
+        "familiarity", "plus", "bonus", "nice", "must", "should", "would", "could", "well",
+        "help", "helping", "using", "use", "used", "new", "other", "others", "including",
+        "include", "includes", "etc", "per", "via", "out", "off", "essential", "required",
+        "require", "requires", "requirements", "desirable", "preferred", "ideally", "looking",
+        "join", "own", "owns", "owning", "solid", "proven", "track", "record", "passionate",
+        "you'll", "company", "business", "environment", "opportunity", "background", "estate",
+        "senior", "junior", "lead", "engineer", "developer", "position",
     };
 
     [GeneratedRegex(@"[A-Za-z][A-Za-z0-9+#.\-]*", RegexOptions.Compiled)]

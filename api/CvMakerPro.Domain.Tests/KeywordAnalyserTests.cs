@@ -74,6 +74,45 @@ public class KeywordAnalyserTests
         Assert.Contains(hidden.Missing, match => match.Term.Equals("kubernetes", StringComparison.OrdinalIgnoreCase));
     }
 
+    [Theory]
+    [InlineData("is")]
+    [InlineData("essential")]
+    [InlineData("background")]
+    [InlineData("required")]
+    [InlineData("senior")]
+    [InlineData("engineer")]
+    public void Job_advert_filler_does_not_become_a_keyword(string filler)
+    {
+        // These are the highest-frequency words in almost any posting. Left in, they dominate the
+        // weighting and push the actual technologies out of the report — and the user is shown a
+        // chip telling them their CV is missing the word "is".
+        const string posting = """
+            Senior Platform Engineer. Kubernetes experience is essential and a strong PostgreSQL
+            background is required. Terraform is essential too.
+            """;
+
+        var report = KeywordAnalyser.Analyse(CvWith(""), posting);
+        var all = report.Matched.Concat(report.Missing).Select(match => match.Term);
+
+        Assert.DoesNotContain(filler, all, StringComparer.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void The_real_technologies_still_rank_above_the_noise()
+    {
+        const string posting = """
+            Senior Platform Engineer. Kubernetes experience is essential and a strong PostgreSQL
+            background is required. Terraform is essential too.
+            """;
+
+        var report = KeywordAnalyser.Analyse(CvWith(""), posting);
+        var terms = report.Matched.Concat(report.Missing).Select(match => match.Term).ToList();
+
+        Assert.Contains("Kubernetes", terms, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("PostgreSQL", terms, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("Terraform", terms, StringComparer.OrdinalIgnoreCase);
+    }
+
     [Fact]
     public void Coverage_is_one_when_there_is_nothing_to_match()
     {
