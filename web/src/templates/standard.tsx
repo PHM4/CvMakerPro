@@ -51,6 +51,9 @@ export function standardBlocks(document: CvDocument, prefix: string): FlowBlock[
 function masthead(document: CvDocument, prefix: string): FlowBlock {
   const { header } = document;
   const contacts = header.contacts.filter((contact) => contact.value.trim() !== '');
+  // On an untouched CV there is nothing above the rule, and a hairline floating at the top of a
+  // blank sheet reads as a rendering fault rather than as an empty document.
+  const hasMasthead = header.fullName.trim() !== '' || !!header.headline || contacts.length > 0;
 
   return {
     key: 'masthead',
@@ -78,7 +81,7 @@ function masthead(document: CvDocument, prefix: string): FlowBlock {
             })}
           </p>
         ) : null}
-        <div className={`${prefix}-masthead-rule`} />
+        {hasMasthead ? <div className={`${prefix}-masthead-rule`} /> : null}
       </header>
     ),
   };

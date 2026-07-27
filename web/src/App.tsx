@@ -6,7 +6,7 @@ import { HeaderEditor } from './editor/HeaderEditor';
 import { SectionEditor, type BulletContext } from './editor/SectionEditor';
 import { ThemePanel } from './editor/ThemePanel';
 import { useExport } from './export/useExport';
-import { sampleDocument } from './model/sample';
+import { starterDocument } from './model/starter';
 import { PaperSurface, type PaperHandle } from './preview/PaperSurface';
 import { mmToPx } from './preview/units';
 import { addSection } from './state/documentEdits';
@@ -21,9 +21,10 @@ type Tab = 'content' | 'design' | 'tailor';
 const PREVIEW_PADDING_PX = 36;
 
 export function App() {
-  // Whatever was open last, or the worked example. A blank page as a first impression makes a
-  // CV builder look broken; the example is also how you see what the templates do.
-  const store = useCvDocument(loadLocalDraft() ?? sampleDocument);
+  // Whatever was open last, or an empty CV. Created once on mount rather than inline, so a
+  // re-render never hands the store a document with a fresh id.
+  const [initial] = useState(() => loadLocalDraft() ?? starterDocument());
+  const store = useCvDocument(initial);
   const { document: cv, update, undo, redo, canUndo, canRedo } = store;
 
   const sessionStore = useSession();
